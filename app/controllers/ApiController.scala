@@ -1,21 +1,21 @@
 package controllers
 
+import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import ipcress.model.{DigestRequest, Format}
-import ipcress.services.DigesterService
 import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.libs.streams.Accumulator
 import play.api.mvc._
 
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class ApiController @Inject()(digesterService: DigesterService,
+class ApiController @Inject()(digester: Digester,
                               components: ControllerComponents)
                                           extends AbstractController(components) {
-  import digesterService._
+  private implicit val ec: ExecutionContext = components.executionContext
   val logger = Logger(this.getClass)
 
   def digest: Action[Source[Array[String], _]] = Action.async(fromFile) { request =>
@@ -26,19 +26,18 @@ class ApiController @Inject()(digesterService: DigesterService,
         Format.PLAIN
     }
     val requestSource = request.body.map(list => DigestRequest(list.toSeq,format))
-    val response: Seq[Try[String]] => Seq[Result] = (results: Seq[Try[String]]) => results map {
-      case Success(result) =>
-        Ok(result)
-      case Failure(t) =>
-        InternalServerError(t.getMessage)
-    }
-    (digestFromSource(requestSource) map response)
-      .map(_.headOption.getOrElse(InternalServerError))
+    digester.execute(requestSource)
   }
 
-  private def fromFile: BodyParser[Source[Array[String], _]] = BodyParser { request =>
+  /*
+  [error]  found   : Source[Array[Object],Any] => Right[Nothing,Source[Array[Object],Any]]
+  [error]  required: Source[Array[Object],Any] => Either[Result,Source[Array[String], _]]
+   */
+  private val fromFile: BodyParser[Source[Array[String], _]] = BodyParser { request =>
     def splitter = Flow[ByteString].map(_.utf8String.lines.toArray)
-    Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)
+    val result: Accumulator[ByteString, Right[Nothing, Source[Array[String], Any]]] =
+      Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)
+    result
   }
 
 }

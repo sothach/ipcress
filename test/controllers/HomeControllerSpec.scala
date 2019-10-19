@@ -16,10 +16,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class HomeControllerSpec extends PlaySpec with Results with MockitoSugar with MustMatchers {
   private implicit val system: ActorSystem = ActorSystem.create("test-actor-system")
   private implicit val ec: ExecutionContext = system.dispatcher
-  private val digesterService = new DigesterService
+  private val digester = new Digester(new DigesterService)
 
   "The HomeController" should {
-    val subject = new HomeController(digesterService, stubControllerComponents())
+    val subject = new HomeController(digester, stubControllerComponents())
     "return InternalServerError in" in {
       val request: Request[DigestRequest] = mock[Request[DigestRequest]]
       when(request.body).thenReturn(DigestRequest( "256.123.123.123","plain"))

@@ -2,21 +2,18 @@ package controllers
 
 import akka.stream.scaladsl.Source
 import ipcress.model.DigestRequest
-import ipcress.services.DigesterService
 import javax.inject._
-import org.slf4j.LoggerFactory
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class HomeController @Inject()(digesterService: DigesterService, cc: ControllerComponents)
+class HomeController @Inject()(digester: Digester, cc: ControllerComponents)
           extends AbstractController(cc) with I18nSupport {
-  import digesterService._
-  private val logger = LoggerFactory.getLogger(this.getClass)
+  private implicit val ec: ExecutionContext = cc.executionContext
 
   val dataForm = Form(
     mapping("ipNumbers" -> nonEmptyText, "format" -> nonEmptyText
@@ -27,16 +24,8 @@ class HomeController @Inject()(digesterService: DigesterService, cc: ControllerC
   }
 
   def process: Action[DigestRequest] = Action.async(parse.form(dataForm)) { implicit request =>
-    logger.debug(s"request received: ${request.body}")
     val requestSource = Source.single(DigestRequest(request.body.ipNumbers,request.body.format))
-    val response: Seq[Try[String]] => Seq[Result] = (results: Seq[Try[String]]) => results map {
-      case Success(result) =>
-        Ok(result)
-      case Failure(t) =>
-        InternalServerError(t.getMessage)
-    }
-    (digestFromSource(requestSource) map response)
-      .map(_.headOption.getOrElse(InternalServerError))
+    digester.execute(requestSource)
   }
 
 }
