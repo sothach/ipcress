@@ -5,7 +5,7 @@ import ipcress.model.DigestRequest
 import ipcress.services.DigesterService
 import org.mockito.Mockito.when
 import org.scalatest.MustMatchers
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatestplus.play.PlaySpec
 import play.api.data.Form
 import play.api.mvc.{Request, Result, Results}

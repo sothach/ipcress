@@ -2,7 +2,7 @@ import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
 import ipcress.model.{DigestRequest, Format}
 import ipcress.services.DigesterService
-import org.scalatest.mockito.MockitoSugar
+import org.scalatestplus.mockito.MockitoSugar
 import org.scalatest.{MustMatchers, WordSpecLike}
 import play.api.libs.json.Json
 
