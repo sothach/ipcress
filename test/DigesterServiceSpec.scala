@@ -39,7 +39,7 @@ class DigesterServiceSpec extends WordSpecLike with MockitoSugar with MustMatche
         case Some(Success(_)) =>
           fail("call expected to fail")
         case Some(Failure(t)) =>
-          t.getMessage mustBe ("""For input string: "aa"""")
+          t.getMessage mustBe """For input string: "aa""""
         case None =>
           fail
       }

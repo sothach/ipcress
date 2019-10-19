@@ -1,8 +1,8 @@
 # IP Address Compressor
 ## Deployment pipeline
-[![Build Status](https://travis-ci.org/sothach/stratum.png)](https://travis-ci.org/sothach/ipcress) >>
+[![Build Status](https://travis-ci.org/sothach/ipcress.png)](https://travis-ci.org/sothach/ipcress) >>
 [![Coverage Status](https://coveralls.io/repos/github/sothach/ipcress/badge.svg?branch=master)](https://coveralls.io/github/sothach/ipcress?branch=master) >>
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a688282e09a04ddeb6d0b29f2c8b82e1)](https://www.codacy.com/project/sothach/ipcress/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sothach/stratum&amp;utm_campaign=Badge_Grade_Dashboard)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a688282e09a04ddeb6d0b29f2c8b82e1)](https://www.codacy.com/project/sothach/ipcress/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sothach/ipcress&amp;utm_campaign=Badge_Grade_Dashboard)
 
 This project is a demo of Play framework / akka-streams
 
