@@ -1,7 +1,7 @@
 package controllers
 
 import akka.NotUsed
-import akka.stream.scaladsl.{Flow, Source}
+import akka.stream.scaladsl.{Flow, Framing, Source}
 import akka.util.ByteString
 import ipcress.model.{DigestRequest, Format}
 import javax.inject.{Inject, Singleton}
@@ -16,7 +16,7 @@ class ApiController @Inject()(digester: Digester,
                                           extends AbstractController(components) {
   private implicit val ec: ExecutionContext = components.executionContext
 
-  def digest: Action[Source[Array[String], _]] = Action.async(fromFile) { request =>
+  def digest: Action[Source[Iterator[String], _]] = Action.async(fromFile) { request =>
     val format = request.headers.get("Accepts") match {
       case Some("application/json") =>
         Format.JSON
@@ -26,9 +26,11 @@ class ApiController @Inject()(digester: Digester,
     digester.execute(request.body.map(list => DigestRequest(list.toSeq,format)))
   }
 
-  private val fromFile: BodyParser[Source[Array[String], Any]] = BodyParser { _ =>
-    val splitter: Flow[ByteString, Array[String], NotUsed] =
-      Flow[ByteString].map(_.utf8String.lines.toArray)
+  private val fromFile: BodyParser[Source[Iterator[String], Any]] = BodyParser { _ =>
+    val splitter: Flow[ByteString, Iterator[String], NotUsed] =
+      Flow[ByteString].map { bytes =>
+        bytes.utf8String.lines
+      }
 
     Accumulator.source[ByteString]
       .map {
