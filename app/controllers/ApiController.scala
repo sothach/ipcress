@@ -29,7 +29,7 @@ class ApiController @Inject()(digester: Digester,
   private val fromFile: BodyParser[Source[Iterator[String], Any]] = BodyParser { _ =>
     val splitter: Flow[ByteString, Iterator[String], NotUsed] =
       Flow[ByteString].map { bytes =>
-        bytes.utf8String.lines
+        bytes.utf8String.lines.toIterator
       }
 
     Accumulator.source[ByteString]
