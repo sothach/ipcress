@@ -4,10 +4,12 @@ import ipcress.model.Format.Format
 import ipcress.model.{Format, IPv4, Series}
 import play.api.libs.json.{JsString, Json}
 
+import scala.collection.immutable.SortedMap
+
 trait Formatter {
   protected def renderSingle(base: IPv4, series: Series): String
   protected def renderRange(base: IPv4, series: Series): String
-  protected def serialize(results: Seq[String]): String
+  protected def serialize(results: Iterable[String]): String
 
   private def render(base: IPv4, series: Series): String = if (series.isSingular) {
     renderSingle(base, series)
@@ -15,12 +17,10 @@ trait Formatter {
     renderRange(base, series)
   }
 
-  def format[T](ipGroups: Map[IPv4, scala.Seq[Series]]): String = {
-    val result = ipGroups.toSeq.sortBy(_._1) flatMap { case (base, items) =>
+  def format[T](ipGroups: Map[IPv4, scala.Seq[Series]]): String =
+    serialize(SortedMap(ipGroups.toSeq:_*) flatMap { case (base, items) =>
       items map (item => render(base, item))
-    }
-    serialize(result)
-  }
+    })
 }
 object Formatter {
   def format(format: Format, groups: Map[IPv4, scala.Seq[Series]]): String =
@@ -35,7 +35,7 @@ class PlainFormatter extends Formatter {
     s"${base(4) = series.min}"
   protected def renderRange(base: IPv4, series: Series): String =
     s"${base(4) = series.min}-${base(4) = series.max}"
-  protected def serialize(results: Seq[String]): String = results.mkString("\n")
+  protected def serialize(results: Iterable[String]): String = results.mkString("\n")
 }
 
 class JsonFormatter extends Formatter {
@@ -45,5 +45,5 @@ class JsonFormatter extends Formatter {
     asJson(Seq(base(4) = series.min))
   protected def renderRange(base: IPv4, series: Series): String =
     asJson(Seq(base(4) = series.min, base(4) = series.max))
-  protected def serialize(results: Seq[String]): String = "["+results.mkString(",")+"]"
+  protected def serialize(results: Iterable[String]): String = "["+results.mkString(",")+"]"
 }

@@ -33,7 +33,7 @@ class ApiController @Inject()(digester: Digester,
   [error]  found   : Source[Array[Object],Any] => Right[Nothing,Source[Array[Object],Any]]
   [error]  required: Source[Array[Object],Any] => Either[Result,Source[Array[String], _]]
    */
-  private val fromFile: BodyParser[Source[Array[String], _]] = BodyParser { request =>
+  private val fromFile: BodyParser[Source[Array[String], Any]] = BodyParser { request =>
     def splitter = Flow[ByteString].map(_.utf8String.lines.toArray)
     val result: Accumulator[ByteString, Right[Nothing, Source[Array[String], Any]]] =
       Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)

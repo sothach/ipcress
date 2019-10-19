@@ -2,6 +2,8 @@ import ipcress.model.{IPv4, Series}
 import ipcress.services.IpDigester
 import org.scalatest.{MustMatchers, WordSpecLike}
 
+import scala.collection.immutable.SortedMap
+
 class IpGroupSpec extends WordSpecLike with MustMatchers {
 
   "An IPv4 address" should {
@@ -105,8 +107,8 @@ class IpGroupSpec extends WordSpecLike with MustMatchers {
     scala.io.Source.fromInputStream(stream).getLines.toSeq
   }
 
-  private def list(ipGroups: Map[IPv4, Seq[Series]]): Seq[String] =
-    ipGroups.toSeq.sortBy(_._1) flatMap {
+  private def list(groups: Map[IPv4, Seq[Series]]) =
+    SortedMap(groups.toSeq:_* )flatMap {
       case (base, items) =>
         items map {
           case series if series.isSingular =>
