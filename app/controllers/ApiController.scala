@@ -27,6 +27,13 @@ class ApiController @Inject()(digester: Digester,
 
   private val fromFile: BodyParser[Source[Array[String], Any]] = BodyParser { _ =>
     val splitter = Flow[ByteString].map(_.utf8String.lines.toArray)
-    Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)
+    val result: Accumulator[ByteString, Either[Result, Source[Array[String], Any]]] =
+      Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)
+    result
   }
+  
+  /*
+  found   : Source[Array[Object],Any] => Right[Nothing,Source[Array[Object],Any]]
+  required: Source[Array[Object],Any] => Either[play.api.mvc.Result,Source[Array[String],Any]]
+   */
 }
