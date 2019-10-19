@@ -14,13 +14,11 @@ protected class Digester @Inject() (digesterService: DigesterService) {
   import digesterService._
 
   def execute(source: Source[DigestRequest, _]): Future[Result] = {
-    val response: Seq[Try[String]] => Seq[Result] = (results: Seq[Try[String]]) => results map {
-      case Success(result) =>
-        Ok(result)
-      case Failure(t) =>
-        InternalServerError(t.getMessage)
+    val response = (results: Seq[Try[String]]) => results map {
+      case Success(result) => Ok(result)
+      case Failure(throws) => InternalServerError(throws.getMessage)
     }
     (digestFromSource(source) map response)
-      .map(_.headOption.getOrElse(InternalServerError))
+      .map(_.headOption.getOrElse(ServiceUnavailable))
   }
 }

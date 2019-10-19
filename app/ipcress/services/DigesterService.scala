@@ -34,4 +34,5 @@ class DigesterService @Inject()(implicit system: ActorSystem) extends StreamServ
 
   private val formatter: Flow[Try[Frame], Try[String], NotUsed] =
     Flow[Try[Frame]].map(_.map(frame => Formatter.format(frame.format,frame.groups)))
+
 }

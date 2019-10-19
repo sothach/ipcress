@@ -10,8 +10,8 @@ import akka.util.Timeout
 abstract class StreamService(implicit system: ActorSystem) {
   implicit lazy val executionContext: MessageDispatcher =
     system.dispatchers.lookup(serviceName)
-  protected implicit val materializer: ActorMaterializer = ActorMaterializer()
-  protected implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
+  implicit val materializer: ActorMaterializer = ActorMaterializer()
+  implicit val timeout: Timeout = Timeout(1, TimeUnit.SECONDS)
 
   def serviceName: String
 }

@@ -1,6 +1,5 @@
 package controllers
 
-import akka.NotUsed
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import ipcress.model.{DigestRequest, Format}
@@ -25,18 +24,15 @@ class ApiController @Inject()(digester: Digester,
       case _ =>
         Format.PLAIN
     }
-    val requestSource = request.body.map(list => DigestRequest(list.toSeq,format))
-    digester.execute(requestSource)
+    digester.execute(request.body.map(list => DigestRequest(list.toSeq,format)))
   }
 
-  /*
-  [error]  found   : Source[Array[Object],Any] => Right[Nothing,Source[Array[Object],Any]]
-  [error]  required: Source[Array[Object],Any] => Either[Result,Source[Array[String], _]]
-   */
-  private val fromFile: BodyParser[Source[Array[String], Any]] = BodyParser { request =>
+  private def fromFile: BodyParser[Source[Array[String], _]] = BodyParser { _ =>
     def splitter = Flow[ByteString].map(_.utf8String.lines.toArray)
     val result: Accumulator[ByteString, Right[Nothing, Source[Array[String], Any]]] =
-      Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)
+      Accumulator.source[ByteString].map(_.via(splitter)).map { src: Source[Array[String],Any] =>
+        Right[Nothing,Source[Array[String],Any]](src)
+      }
     result
   }
 

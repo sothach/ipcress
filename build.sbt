@@ -14,7 +14,7 @@ libraryDependencies ++= Seq(
   guice,
   ws,
   "ch.qos.logback" % "logback-core" % "1.2.3",
-  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.0" % Test,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % Test,
   "org.mockito" % "mockito-all" % "2.0.2-beta" % Test)
 
 coverageExcludedPackages := "<empty>;controllers.Reverse.*;router.*;controllers.javascript;play.api.*;views.html.*"

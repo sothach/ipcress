@@ -24,8 +24,8 @@ class HomeController @Inject()(digester: Digester, cc: ControllerComponents)
   }
 
   def process: Action[DigestRequest] = Action.async(parse.form(dataForm)) { implicit request =>
-    val requestSource = Source.single(DigestRequest(request.body.ipNumbers,request.body.format))
-    digester.execute(requestSource)
+    digester.execute(
+      Source.single(DigestRequest(request.body.ipNumbers,request.body.format)))
   }
 
 }
