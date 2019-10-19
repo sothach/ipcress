@@ -1,0 +1,30 @@
+@import ipcress.model.DigestRequest
+@(dataForm: Form[DigestRequest])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+
+<div id="content" class="wrapper doc">
+    <article>
+        <h1>IP Address Digester</h1>
+        <p>
+            This page provides an interface to digest a list of IP address, replacing consecutive
+            addresses with a range, i.e., for use in black/white list applications
+        </p>
+
+        <h2>Submit</h2>
+        <p>
+            @helper.form(action = routes.HomeController.process()) {
+                @helper.textarea(dataForm("ipNumbers"), 'rows -> 5, 'cols -> 60)
+                @helper.inputText(dataForm("format"), 'size -> 6)
+                <button>Save</button>
+            }
+        </p>
+
+        <h2>API</h2>
+        <p>
+            This service can also be accessed via it's REST API
+        </p>
+
+        <pre><code># Home page
+            POST     /digest               controllers.ApiController.digest</code></pre>
+    </article>
+
+</div>

@@ -1,0 +1,16 @@
+@(title: String)(content: Html)(implicit messagesProvider: play.api.i18n.MessagesProvider)
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        @* Here's where we render the page title `String`. *@
+        <title>@title</title>
+        <link rel="stylesheet" type="text/css" media="screen" href="@controllers.routes.Assets.versioned("../../public/stylesheets/main.css")"/>
+        <link rel="shortcut icon" type="image/png" href="@controllers.routes.Assets.versioned("../../public/images/favicon.png")"/>
+        <script src="@controllers.routes.Assets.versioned("../../public/javascripts/hello.js")" type="text/javascript"></script>
+    </head>
+    <body>
+        @* And here's where we render the `Html` object containing
+         * the page content. *@
+        @content
+    </body>
+</html>
