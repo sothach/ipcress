@@ -16,7 +16,10 @@ class DigesterService @Inject()(implicit system: ActorSystem) extends StreamServ
 
   private case class Frame(groups: Map[IPv4, Seq[Series]], format: Format)
   private object Frame {
-    def apply(values: (Map[IPv4, Seq[Series]],Format)): Frame = Frame(values._1, values._2)
+    def apply(values: (Map[IPv4, Seq[Series]],Format)): Frame = {
+      val(groups, format) = values
+      Frame(groups, format)
+    }
   }
 
   def digestFromSource(request: Source[DigestRequest,_]): Future[Seq[Try[String]]] =
