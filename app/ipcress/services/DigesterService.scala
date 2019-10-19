@@ -19,8 +19,8 @@ class DigesterService @Inject()(implicit system: ActorSystem) extends StreamServ
     def apply(values: (Map[IPv4, Seq[Series]],Format)): Frame = Frame(values._1, values._2)
   }
 
-  def digestFromSource(request: Source[DigestRequest,_]): Future[Try[String]] =
-    request.async via filter via digester via formatter runWith Sink.head
+  def digestFromSource(request: Source[DigestRequest,_]): Future[Seq[Try[String]]] =
+    request.async via filter via digester via formatter runWith Sink.seq
 
   private val filter: Flow[DigestRequest, DigestRequest, NotUsed] = Flow[DigestRequest]
     .collect { case element @ DigestRequest(ips, _) if ips.nonEmpty => element }

@@ -8,7 +8,7 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
       
 resolvers += "Akka Snapshot Repository" at "https://repo.akka.io/snapshots/"
       
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.10"
 
 libraryDependencies ++= Seq(
   guice,

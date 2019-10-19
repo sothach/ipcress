@@ -18,11 +18,13 @@ class DigesterServiceSpec extends WordSpecLike with MockitoSugar with MustMatche
     "start-up correctly" in {
       val request = Source.single(DigestRequest(ipNumbers,Format.JSON))
       val results = Await.result(subject.digestFromSource(request), Duration.Inf)
-      results match {
-        case Success(map) =>
+      results.headOption match {
+        case Some(Success(map)) =>
           Json.parse(map) mustBe expectedJson
-        case Failure(t) =>
+        case Some(Failure(t)) =>
           fail(t)
+        case None =>
+          fail
       }
     }
   }
@@ -33,11 +35,13 @@ class DigesterServiceSpec extends WordSpecLike with MockitoSugar with MustMatche
     "catch processing errors" in {
       val results = Await.result(subject.digestFromSource(
         Source.single(DigestRequest(Seq("aa.123.123.123")))), Duration.Inf)
-      results match {
-        case Success(_) =>
+      results.headOption match {
+        case Some(Success(_)) =>
           fail("call expected to fail")
-        case Failure(t) =>
+        case Some(Failure(t)) =>
           t.getMessage mustBe ("""For input string: "aa"""")
+        case None =>
+          fail
       }
     }
   }

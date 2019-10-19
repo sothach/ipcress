@@ -9,7 +9,7 @@ import play.api.Logger
 import play.api.libs.streams.Accumulator
 import play.api.mvc._
 
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 @Singleton
 class ApiController @Inject()(digesterService: DigesterService,
@@ -26,11 +26,14 @@ class ApiController @Inject()(digesterService: DigesterService,
         Format.PLAIN
     }
     val requestSource = request.body.map(list => DigestRequest(list.toSeq,format))
-    digestFromSource(requestSource) map {
-      case Success(result) => Ok(result)
+    val response: Seq[Try[String]] => Seq[Result] = (results: Seq[Try[String]]) => results map {
+      case Success(result) =>
+        Ok(result)
       case Failure(t) =>
         InternalServerError(t.getMessage)
     }
+    (digestFromSource(requestSource) map response)
+      .map(_.headOption.getOrElse(InternalServerError))
   }
 
   private def fromFile: BodyParser[Source[Array[String], _]] = BodyParser { request =>

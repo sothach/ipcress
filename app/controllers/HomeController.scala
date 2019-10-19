@@ -10,7 +10,7 @@ import play.api.data.Forms._
 import play.api.i18n.I18nSupport
 import play.api.mvc._
 
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
 @Singleton
 class HomeController @Inject()(digesterService: DigesterService, cc: ControllerComponents)
@@ -29,11 +29,14 @@ class HomeController @Inject()(digesterService: DigesterService, cc: ControllerC
   def process: Action[DigestRequest] = Action.async(parse.form(dataForm)) { implicit request =>
     logger.debug(s"request received: ${request.body}")
     val requestSource = Source.single(DigestRequest(request.body.ipNumbers,request.body.format))
-    digestFromSource(requestSource) map {
-      case Success(result) => Ok(result)
+    val response: Seq[Try[String]] => Seq[Result] = (results: Seq[Try[String]]) => results map {
+      case Success(result) =>
+        Ok(result)
       case Failure(t) =>
         InternalServerError(t.getMessage)
     }
+    (digestFromSource(requestSource) map response)
+      .map(_.headOption.getOrElse(InternalServerError))
   }
 
 }
