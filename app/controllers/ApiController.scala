@@ -1,7 +1,7 @@
 package controllers
 
 import akka.NotUsed
-import akka.stream.scaladsl.{Flow, Framing, Source}
+import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
 import ipcress.model.{DigestRequest, Format}
 import javax.inject.{Inject, Singleton}
@@ -29,7 +29,7 @@ class ApiController @Inject()(digester: Digester,
   private val fromFile: BodyParser[Source[Iterator[String], Any]] = BodyParser { _ =>
     val splitter: Flow[ByteString, Iterator[String], NotUsed] =
       Flow[ByteString].map { bytes =>
-        bytes.utf8String.lines.toIterator
+        bytes.utf8String.split("\n").toIterator
       }
 
     Accumulator.source[ByteString]
