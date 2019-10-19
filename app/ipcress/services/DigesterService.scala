@@ -23,7 +23,7 @@ class DigesterService @Inject()(implicit system: ActorSystem) extends StreamServ
     request.async via filter via digester via formatter runWith Sink.head
 
   private val filter: Flow[DigestRequest, DigestRequest, NotUsed] = Flow[DigestRequest]
-    .collect { case element @ DigestRequest(ips, _) if ips.trim.nonEmpty => element }
+    .collect { case element @ DigestRequest(ips, _) if ips.nonEmpty => element }
 
   private val digester: Flow[DigestRequest, Try[Frame], NotUsed] =
     Flow[DigestRequest] map(request =>
