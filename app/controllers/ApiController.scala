@@ -28,12 +28,23 @@ class ApiController @Inject()(digester: Digester,
   private val fromFile: BodyParser[Source[Array[String], Any]] = BodyParser { _ =>
     val splitter = Flow[ByteString].map(_.utf8String.lines.toArray)
     val result: Accumulator[ByteString, Either[Result, Source[Array[String], Any]]] =
-      Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)
+      Accumulator.source[ByteString]
+        .map {
+          src: Source[ByteString, _] =>
+           src via splitter
+        }
+        .map {
+          repr =>
+            Right(repr)
+        }
     result
   }
   
   /*
-  found   : Source[Array[Object],Any] => Right[Nothing,Source[Array[Object],Any]]
-  required: Source[Array[Object],Any] => Either[play.api.mvc.Result,Source[Array[String],Any]]
+[error] /home/travis/build/sothach/ipcress/app/controllers/ApiController.scala:31:69: type mismatch;
+[error]  found   : Source[Array[Object],Any] => scala.util.Right[Nothing,Source[Array[Object],Any]]
+[error]  required: Source[Array[Object],Any] => Either[play.api.mvc.Result,Source[Array[String],Any]]
+[error]       Accumulator.source[ByteString].map(_.via(splitter)).map(Right.apply)
+[error]                                                                     ^
    */
 }
