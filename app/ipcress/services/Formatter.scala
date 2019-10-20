@@ -1,7 +1,6 @@
 package ipcress.services
 
-import ipcress.model.Format.Format
-import ipcress.model.{Format, IPv4, Series}
+import ipcress.model.{DigestRequest, Format, IPv4, Series}
 import play.api.libs.json.{JsString, Json}
 
 import scala.collection.immutable.SortedMap
@@ -23,11 +22,11 @@ trait Formatter {
     })
 }
 object Formatter {
-  def format(format: Format, groups: Map[IPv4, scala.Seq[Series]]): String =
-    (format match {
+  def format(frame: DigestRequest): String =
+    (frame.format match {
       case Format.JSON => new JsonFormatter
       case Format.PLAIN => new PlainFormatter
-    }).format(groups)
+    }).format(frame.result)
 }
 
 class PlainFormatter extends Formatter {

@@ -15,7 +15,7 @@
 % devspace create space ipcress
 % sbt docker:publish
 % devspace deploy --skip-build
-%  devspace open --var="play.http.secret.key=*secret*"
+% devspace open --var="play.http.secret.key=*secret*"
 ```
 
 ## Add application secret to cloud environment
