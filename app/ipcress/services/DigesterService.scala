@@ -12,7 +12,7 @@ import scala.util.Try
 
 @Singleton
 class DigesterService @Inject()(implicit system: ActorSystem) extends StreamService {
-  val serviceName: String = "digester-dispatcher"
+  val serviceName: String = "digester-service"
 
   private case class Frame(groups: Map[IPv4, Seq[Series]], format: Format)
   private object Frame {

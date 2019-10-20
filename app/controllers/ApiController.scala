@@ -15,17 +15,12 @@ class ApiController @Inject()(digester: Digester,
                                           extends AbstractController(components) {
   private implicit val ec: ExecutionContext = components.executionContext
 
-  def digest: Action[Source[Iterator[String], _]] = Action.async(fromFile) { request =>
-    val format = request.headers.get("Accepts") match {
-      case Some("application/json") =>
-        Format.JSON
-      case _ =>
-        Format.PLAIN
-    }
+  def digest: Action[Source[Iterator[String], _]] = Action.async(bodySource) { request =>
+    val format = Format.fromContentType(request.headers.get("Accepts"))
     digester.execute(request.body.map(list => DigestRequest(list.toSeq,format)))
   }
 
-  private val fromFile: BodyParser[Source[Iterator[String], Any]] = BodyParser { _ =>
+  private val bodySource: BodyParser[Source[Iterator[String], Any]] = BodyParser { _ =>
     val splitter = Flow[ByteString].map(_.utf8String.split("\n").toIterator)
     Accumulator.source[ByteString].map(src => Right(src via splitter))
   }

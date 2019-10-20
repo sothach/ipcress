@@ -43,3 +43,6 @@ tm*.log
 tm.out
 worker*.log
 /bin
+
+# Ignore DevSpace cache and log folder
+.devspace/

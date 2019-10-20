@@ -39,3 +39,6 @@ As well as plain text, JSON format may be specified:
   {"ip": ["99.244.156.149"]}
 ]
 ````
+
+## Cloud Deployment
+[see instructions](doc/deploy.md)

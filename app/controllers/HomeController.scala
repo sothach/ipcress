@@ -16,7 +16,9 @@ class HomeController @Inject()(digester: Digester, cc: ControllerComponents)
   private implicit val ec: ExecutionContext = cc.executionContext
 
   val dataForm = Form(
-    mapping("ipNumbers" -> nonEmptyText, "format" -> nonEmptyText
+    mapping(
+      "ipNumbers" -> nonEmptyText,
+      "format" -> nonEmptyText
     )(DigestRequest.apply)(DigestRequest.unapply)
   )
   def index: Action[AnyContent] = Action { implicit request =>
