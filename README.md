@@ -53,11 +53,11 @@ As well as plain text, JSON format may be specified:
 | source | => | filter | => | digester | => | formatter | => | response |
 +--------+    +--------+    +----------+    +-----------+    +----------+
 ```
-1. Request body is parsed into a iteration over strings, wrapped in a `Source`
-1. Invalid (e.g., empty) elements are filtered out
-1. Digester algorithm applied to entire collection (needs to be sorted and unique)
-1. Results are formatted as per `Accepts` header / selection, JSON or Plain
-1. Response body set if results available
+1.  Request body is parsed into a iteration over strings, wrapped in a `Source`
+2.  Invalid (e.g., empty) elements are filtered out
+3.  Digester algorithm applied to entire collection (needs to be sorted and unique)
+4.  Results are formatted as per `Accepts` header / selection, JSON or Plain
+5.  Response body set if results available
 
 ## Cloud Deployment
 [see instructions](doc/deploy.md)

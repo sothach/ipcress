@@ -26,4 +26,3 @@ E.g., locally:
 ```bash
 % docker run -p 9000:9000 -e play.http.secret.key=$APPLICATION_SECRET dscr.io/sothach/ipcress:latest
 ```
-
