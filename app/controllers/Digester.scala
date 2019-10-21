@@ -10,7 +10,7 @@ import play.api.mvc._
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
-protected class Digester @Inject() (digesterService: DigesterService) {
+class Digester @Inject() (digesterService: DigesterService) {
   import digesterService._
 
   def execute(source: Source[DigestRequest, _]): Future[Result] = {
@@ -19,6 +19,6 @@ protected class Digester @Inject() (digesterService: DigesterService) {
       case Failure(throws) => InternalServerError(throws.getMessage)
     }
     (digestFromSource(source) map response)
-      .map(_.headOption.getOrElse(ServiceUnavailable))
+      .map(_.headOption.getOrElse(BadRequest))
   }
 }

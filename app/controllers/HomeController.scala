@@ -19,8 +19,8 @@ class HomeController @Inject()(digester: Digester, cc: ControllerComponents)
     mapping(
       "ipNumbers" -> nonEmptyText,
       "format" -> nonEmptyText
-    )(DigestRequest.apply)(DigestRequest.unapply)
-  )
+    )(DigestRequest.apply)(DigestRequest.unapply))
+
   def index: Action[AnyContent] = Action { implicit request =>
     Ok(views.html.landing(dataForm))
   }

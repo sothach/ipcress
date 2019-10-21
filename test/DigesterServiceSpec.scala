@@ -1,50 +1,55 @@
 import akka.actor.ActorSystem
 import akka.stream.scaladsl.Source
+import controllers.Digester
 import ipcress.model.{DigestRequest, Format}
 import ipcress.services.DigesterService
+import org.scalatest.{AsyncFlatSpec, MustMatchers}
 import org.scalatestplus.mockito.MockitoSugar
-import org.scalatest.{MustMatchers, WordSpecLike}
 import play.api.libs.json.Json
+import play.mvc.Http.Status._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success}
 
-class DigesterServiceSpec extends WordSpecLike with MockitoSugar with MustMatchers {
+class DigesterServiceSpec extends AsyncFlatSpec with MockitoSugar with MustMatchers {
   private implicit val system: ActorSystem = ActorSystem.create("test-actor-system")
 
-  "The DigesterService" should {
+  "The DigesterService" should "start-up correctly" in {
     val subject = new DigesterService
-    "start-up correctly" in {
-      val request = Source.single(DigestRequest(ipNumbers,Format.JSON))
-      val results = Await.result(subject.digestFromSource(request), Duration.Inf)
-      results.headOption match {
-        case Some(Success(map)) =>
-          Json.parse(map) mustBe expectedJson
-        case Some(Failure(t)) =>
-          fail(t)
-        case None =>
-          fail
-      }
+    val request = Source.single(DigestRequest(ipNumbers, Format.JSON))
+    val results = Await.result(subject.digestFromSource(request), Duration.Inf)
+    results.headOption match {
+      case Some(Success(map)) =>
+        Json.parse(map) mustBe expectedJson
+      case Some(Failure(t)) =>
+        fail(t)
+      case None =>
+        fail
     }
   }
 
-  "The DigesterService" should {
+  "The DigesterService" should "catch processing errors" in {
     val subject = new DigesterService
-
-    "catch processing errors" in {
-      val results = Await.result(subject.digestFromSource(
-        Source.single(DigestRequest(Seq("aa.123.123.123")))), Duration.Inf)
-      results.headOption match {
-        case Some(Success(_)) =>
-          fail("call expected to fail")
-        case Some(Failure(t)) =>
-          t.getMessage mustBe """For input string: "aa""""
-        case None =>
-          fail
-      }
+    val results = Await.result(subject.digestFromSource(
+      Source.single(DigestRequest(Seq("aa.123.123.123")))), Duration.Inf)
+    results.headOption match {
+      case Some(Success(_)) =>
+        fail("call expected to fail")
+      case Some(Failure(t)) =>
+        t.getMessage mustBe """For input string: "aa""""
+      case None =>
+        fail
     }
   }
+
+  "The Digester" should "flag empty requests as bad requests" in {
+      val subject = new Digester(new DigesterService)
+      val request = DigestRequest(Seq.empty)
+      subject.execute(Source.single(request)) map { result =>
+        result.header.status mustBe BAD_REQUEST
+      }
+    }
 
   private val ipNumbers: Seq[String] = Seq(
     "99.243.62.20", "99.243.64.40", "99.243.64.40", "99.243.64.41", "99.243.64.42",

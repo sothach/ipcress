@@ -4,12 +4,12 @@ case class IPv4(value: Long) extends AnyVal with Ordered[IPv4] {
   override def compare(other: IPv4): Int = this.value compare other.value
   override def toString: String = ((1 to 4) map apply).mkString(".")
   def apply(pos: Int): Int = {
-    require(pos > 0 && pos <= 4)
+    require(pos > 0 && pos <= 4, s"octet to query must be between 1 and 4")
     val shift = (4-pos) << 3
     ((value & (0xff << shift)) >> shift).toInt
   }
   def update(pos: Int, octet: Int): IPv4 = {
-    require(pos > 0 && pos <= 4)
+    require(pos > 0 && pos <= 4, s"octet to assign must be between 1 and 4")
     require(octet >= 0 && octet <= 255, s"$octet should be 0 to 255")
     val shift = (4-pos) << 3
     IPv4((value & ~(0xff << shift)) + (octet.toLong << shift))
